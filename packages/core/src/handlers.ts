@@ -62,15 +62,12 @@ function parseXMLContent(content: string) {
     return node;
   });
 
-  const data = nodes.reduce(
-    (data, node) => {
-      if (node.type === "element") {
-        data[node.name] = node.content;
-      }
-      return data;
-    },
-    {} as Record<string, string>
-  );
+  const data = nodes.reduce((data, node) => {
+    if (node.type === "element") {
+      data[node.name] = node.content;
+    }
+    return data;
+  }, {} as Record<string, string>);
 
   return data;
 }
@@ -201,7 +198,9 @@ function setValueByPath(
     // Safety check: if current is not an object/array, we can't proceed
     if (typeof current !== "object" || current === null) {
       console.error(
-        `Cannot set path beyond non-object at segment ${i} ('${key}') for path ${path.join(".")}`
+        `Cannot set path beyond non-object at segment ${i} ('${key}') for path ${path.join(
+          "."
+        )}`
       );
       return;
     }
@@ -213,7 +212,9 @@ function setValueByPath(
     current[finalKey] = value;
   } else {
     console.error(
-      `Cannot set final value, parent at path ${path.slice(0, -1).join(".")} is not an object.`
+      `Cannot set final value, parent at path ${path
+        .slice(0, -1)
+        .join(".")} is not an object.`
     );
   }
 }
@@ -232,7 +233,9 @@ export async function resolveTemplates(
 
     if (!templateInfo.primary_key) {
       console.warn(
-        `Template at path ${templateInfo.path.join(".")} has no primary key: ${templateInfo.template_string}`
+        `Template at path ${templateInfo.path.join(".")} has no primary key: ${
+          templateInfo.template_string
+        }`
       );
       continue;
     }
@@ -245,16 +248,26 @@ export async function resolveTemplates(
       resolvedValue = await resolver(templateInfo.primary_key, valuePath);
     } catch (error) {
       console.error(
-        `Error resolving template at path ${templateInfo.path.join(".")}: ${error}`
+        `Error resolving template at path ${templateInfo.path.join(
+          "."
+        )}: ${error}`
       );
     }
 
     if (resolvedValue === undefined) {
       console.warn(
-        `Could not resolve template "${templateInfo.template_string}" at path ${templateInfo.path.join(".")}. Path or source might be invalid.`
+        `Could not resolve template "${
+          templateInfo.template_string
+        }" at path ${templateInfo.path.join(
+          "."
+        )}. Path or source might be invalid.`
       );
       throw new Error(
-        `Could not resolve template "${templateInfo.template_string}" at path ${templateInfo.path.join(".")}. Path or source might be invalid.`
+        `Could not resolve template "${
+          templateInfo.template_string
+        }" at path ${templateInfo.path.join(
+          "."
+        )}. Path or source might be invalid.`
       );
     }
 
@@ -421,15 +434,15 @@ export async function prepareActionCall({
         "parse" in action.schema || "validate" in action.schema
           ? action.schema
           : "$schema" in action.schema
-            ? jsonSchema(action.schema)
-            : z.object(action.schema);
+          ? jsonSchema(action.schema)
+          : z.object(action.schema);
 
       call.data =
         "parse" in schema
           ? (schema as ZodSchema).parse(data)
           : schema.validate
-            ? schema.validate(data)
-            : data;
+          ? schema.validate(data)
+          : data;
     } catch (error) {
       throw new ParsingError(call, error);
     }
@@ -617,7 +630,7 @@ export async function prepareContextActions(params: {
   const actions =
     typeof context.actions === "function"
       ? await Promise.try(context.actions, state)
-      : (context.actions ?? []);
+      : context.actions ?? [];
 
   return Promise.all(
     actions.map((action) =>

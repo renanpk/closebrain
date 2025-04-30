@@ -6,15 +6,16 @@ import {
   type ToolSet,
 } from "ai";
 import { task } from "../task";
-import type {
-  Action,
-  ActionCallContext,
-  AnyAction,
-  AnyAgent,
-  AnyContext,
-  WorkingMemory,
+import {
+  LogLevel,
+  type Action,
+  type ActionCallContext,
+  type AnyAction,
+  type AnyAgent,
+  type AnyContext,
+  type WorkingMemory,
 } from "../types";
-import type { Logger } from "../logger";
+import { Logger } from "../logger";
 import { wrapStream } from "../streaming";
 import { modelsResponseConfig, reasoningModels } from "../configs";
 
@@ -33,19 +34,37 @@ function prepareStreamResponse({
   model,
   stream,
   isReasoningModel,
+  logger,
 }: {
   model: LanguageModelV1;
   stream: StreamTextResult<ToolSet, never>;
   isReasoningModel: boolean;
+  logger: Logger;
 }) {
   const prefix =
     modelsResponseConfig[model.modelId]?.prefix ??
     (isReasoningModel
-      ? (modelsResponseConfig[model.modelId]?.thinkTag ?? "<think>")
+      ? modelsResponseConfig[model.modelId]?.thinkTag ?? "<think>"
       : "<response>");
   const suffix = "</response>";
   return {
     getTextResponse: async () => {
+      const rawTextResult = await stream.text; // <-- AQUI ESTÁ O TEXTO BRUTO
+
+      // ---------> ADICIONE O DEBUG LOG AQUI <---------
+      if (logger) {
+        logger.debug(
+          "prepareStreamResponse:raw_llm_response",
+          "Raw LLM Text:",
+          rawTextResult
+        );
+      } else {
+        // Fallback para console.log
+        console.log("--- RAW LLM RESPONSE START ---");
+        console.log(rawTextResult);
+        console.log("--- RAW LLM RESPONSE END ---");
+      }
+      // ----------------------------------------------
       const result = await stream.text;
       const text = prefix + result + suffix;
       return text;
@@ -69,7 +88,6 @@ export const runGenerate = task({
     { abortSignal }
   ) => {
     const isReasoningModel = reasoningModels.includes(model.modelId);
-
     const messages: CoreMessage[] = [
       {
         role: "user",
@@ -81,12 +99,11 @@ export const runGenerate = task({
         ],
       },
     ];
-
     if (modelsResponseConfig[model.modelId]?.assist !== false)
       messages.push({
         role: "assistant",
         content: isReasoningModel
-          ? (modelsResponseConfig[model.modelId]?.thinkTag ?? "<think>")
+          ? modelsResponseConfig[model.modelId]?.thinkTag ?? "<think>"
           : "<response>",
       });
 
@@ -115,6 +132,9 @@ export const runGenerate = task({
       model,
       stream,
       isReasoningModel,
+      logger: new Logger({
+        level: LogLevel.DEBUG,
+      }),
     });
   },
 });

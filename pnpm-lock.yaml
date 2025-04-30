@@ -608,6 +608,9 @@ importers:
       '@ai-sdk/anthropic':
         specifier: ^1.2.0
         version: 1.2.5(zod@3.24.2)
+      '@daydreamsai/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
       '@daydreamsai/core':
         specifier: workspace:*
         version: link:../../packages/core

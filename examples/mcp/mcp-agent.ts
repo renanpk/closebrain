@@ -1,9 +1,10 @@
-import { createDreams } from "@daydreamsai/core";
+import { createDreams, Logger, output, TaskRunner } from "@daydreamsai/core";
 import { createMcpExtension } from "@daydreamsai/mcp";
 import { LogLevel } from "@daydreamsai/core";
 import path from "path";
 import { groq } from "@ai-sdk/groq";
-import { cli } from "@daydreamsai/cli";
+import { cliExtension } from "@daydreamsai/cli";
+import { Output } from "ai";
 
 /**
  * This example demonstrates how to create an agent that connects to an MCP server
@@ -16,20 +17,25 @@ import { cli } from "@daydreamsai/cli";
 // Create an agent with the MCP extension
 createDreams({
   model: groq("deepseek-r1-distill-llama-70b"),
-  logger: LogLevel.INFO,
-  contexts: [cli],
+  taskRunner: new TaskRunner(1),
+  logger: new Logger({ level: LogLevel.INFO }),
+  contexts: [],
   // Add the MCP extension with the example server configuration
   extensions: [
+    cliExtension,
     createMcpExtension([
       {
         id: "example-server",
         name: "Example Resource Server",
         transport: {
           type: "stdio",
-          command: "tsx",
+          command: "bun",
           args: [path.join(__dirname, "mcp-server-example.ts")],
         },
       },
     ]),
   ],
+  outputs: {
+    test: output({}),
+  },
 }).start();

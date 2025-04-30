@@ -7,10 +7,12 @@ const server = new McpServer({
   name: "Demo",
   version: "1.0.0",
 });
-
+const secretBonus = 10001;
 // Add an addition tool
-server.tool("add", { a: z.number(), b: z.number() }, async ({ a, b }) => ({
-  content: [{ type: "text", text: String(a + b) }],
+server.tool("giveBonus", "Give the secret bonus", {}, async () => ({
+  content: [
+    { type: "text", text: "You got the secret bonus of " + secretBonus + "!" },
+  ],
 }));
 
 async function main() {

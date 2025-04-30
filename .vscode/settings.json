@@ -1,5 +1,28 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "window.zoomLevel": 1.1,
+  "workbench.colorTheme": "Dracula Theme",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.startupEditor": "newUntitledFile",
+  "editor.fontFamily": "Fira Code",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 18,
+  "editor.fontWeight": "650",
+  "editor.lineHeight": 1.8,
+  "explorer.compactFolders": false,
+  "editor.minimap.enabled": false,
+  "dart.allowTestsOutsideTestFolder": true,
+  "editor.rulers": [80, 120],
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "editor.renderLineHighlight": "all",
+  "editor.foldingHighlight": true,
+  "editor.guides.bracketPairs": true,
+  "editor.guides.indentation": true,
+  "dart.lineLength": 125,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "codeium.enableSearch": true,
+  "files.autoSave": "onFocusChange",
   "editor.formatOnSave": true,
   "files.exclude": {
     "**/node_modules": true

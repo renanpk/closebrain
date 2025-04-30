@@ -45,9 +45,7 @@ export function createDreams<TContext extends AnyContext = AnyContext>(
   config: Config<TContext>
 ): Agent<TContext> {
   let booted = false;
-
   const inputSubscriptions = new Map<string, Subscription>();
-
   const contextIds = new Set<string>();
   const contexts = new Map<string, ContextState>();
   const contextsRunning = new Map<
@@ -58,14 +56,11 @@ export function createDreams<TContext extends AnyContext = AnyContext>(
       push: (log: Log) => Promise<void>;
     }
   >();
-
   const workingMemories = new Map<string, WorkingMemory>();
-
   const ctxSubscriptions = new Map<
     string,
     Set<(ref: AnyRef, done: boolean) => void>
   >();
-
   const __ctxChunkSubscriptions = new Map<
     string,
     Set<(chunk: LogChunk) => void>
@@ -632,6 +627,12 @@ export function createDreams<TContext extends AnyContext = AnyContext>(
           });
 
           const prompt = mainPrompt.render(promptData);
+
+          logger.info(
+            "agent:run:prompt",
+            `Prompt for step ${state.step}:`,
+            prompt
+          );
 
           stepRef.data.prompt = prompt;
 
